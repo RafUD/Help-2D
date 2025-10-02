@@ -2,8 +2,9 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - FallCollider
   layers:
   - Default
   - TransparentFX
@@ -11,7 +12,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Ground
   - 
   - 
   - 
@@ -41,3 +42,32 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background5
+    uniqueID: 827189039
+    locked: 0
+  - name: Background4
+    uniqueID: 821043557
+    locked: 0
+  - name: Background3
+    uniqueID: 4050338131
+    locked: 0
+  - name: Background2
+    uniqueID: 3781354803
+    locked: 0
+  - name: Background1
+    uniqueID: 2984543355
+    locked: 0
+  - name: Ground
+    uniqueID: 532743373
+    locked: 0
+  - name: Decoration
+    uniqueID: 2610752015
+    locked: 0
+  - name: Player
+    uniqueID: 4030265899
+    locked: 0
+  - name: Objects
+    uniqueID: 3678226185
+    locked: 0
+  m_RenderingLayers:
+  - Default
