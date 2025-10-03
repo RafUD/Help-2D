@@ -4,26 +4,35 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-
-    private float horizontal;
-    private float speed = 8f;
-    private float jumping = 16f;
+    public float speed = 8f;
+    public float jumping = 16f;
     private bool isFacingRight = true;
 
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
 
-
     private bool isDead = false;
+
+
 
 
     private void Update()
     {
         if (isDead) return;
 
-        horizontal = Input.GetAxisRaw("Horizontal");
+        // Flip direction if left key is pressed
+        if (!isFacingRight && Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            Flip();
+        }
+        else if (isFacingRight && Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            Flip();
+        }
 
+
+        // Jumping logic
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumping);
@@ -33,17 +42,16 @@ public class Movement : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
         }
-
-        Flip();
     }
 
     private void FixedUpdate()
     {
         if (isDead) return;
 
-        rb.linearVelocity = new Vector2(horizontal * speed, rb.linearVelocity.y);
+        // Always move in the direction the player is facing
+        float direction = isFacingRight ? 1f : -1f;
+        rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
     }
-
 
     private bool IsGrounded()
     {
@@ -52,16 +60,11 @@ public class Movement : MonoBehaviour
 
     private void Flip()
     {
-        if(isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
-        {
-            isFacingRight = !isFacingRight;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
-        }
+        isFacingRight = !isFacingRight;
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1f;
+        transform.localScale = localScale;
     }
-
-
 
     [SerializeField] private float deathBounceForce = 24f;
     [SerializeField] private float deathSpinTorque = 300f;
@@ -87,6 +90,12 @@ public class Movement : MonoBehaviour
 
     public void Respawn()
     {
+        // Reset facing direction to right
+        if (!isFacingRight)
+        {
+            Flip(); 
+        }
+
         Debug.Log("Player Respawned");
         isDead = false;
 
@@ -103,6 +112,4 @@ public class Movement : MonoBehaviour
         // Reset rotation to upright
         transform.rotation = Quaternion.identity;
     }
-
-
 }

@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -6,6 +7,10 @@ public class PlayerManager : MonoBehaviour
 
     private const string tag = "FallCollider";
     private Vector3 spawnPosition;
+
+    public int lives = 3;
+    public GameObject GameOverCanvas;
+
 
     private void Start()
     {
@@ -17,7 +22,12 @@ public class PlayerManager : MonoBehaviour
     {
         if (collider.CompareTag(tag))
         {
+            lives--;
             Die();
+            if(lives == 0)
+            {
+                RestartUI();
+            }
         }
     }
 
@@ -30,6 +40,8 @@ public class PlayerManager : MonoBehaviour
             movement.PlayerDeath();
         }
 
+        
+
         // Optionally, you can delay the reset
         StartCoroutine(RespawnPlayer());
     }
@@ -37,7 +49,7 @@ public class PlayerManager : MonoBehaviour
     private IEnumerator RespawnPlayer()
     {
         // Wait a moment after death
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2.2f);
 
         // Reset position
         transform.position = spawnPosition;
@@ -50,5 +62,10 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    private void RestartUI()
+    {
+        GameOverCanvas.SetActive(true);
+        Time.timeScale = 0f;
+    }
 
 }
