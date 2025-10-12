@@ -1,60 +1,103 @@
 using System.Collections;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-
-    private const string tag = "FallCollider";
     private Vector3 spawnPosition;
 
-    public int lives = 3;
+    public int maxLives = 3;
+    private int currentLives;
+
     public GameObject GameOverCanvas;
 
+    [Header("Damage Feedback")]
+    public float knockbackX = 5f;        // Horizontal push amount
+    public float miniJumpY = 4f;         // How high the "hit jump" goes
+    public float invincibilityTime = 1f; // Duration of invulnerability
+    public float blinkSpeed = 0.1f;      // Sprite blinking speed
+
+    private bool isInvincible = false;
+    private Rigidbody2D rb;
+    private SpriteRenderer sr;
 
     private void Start()
     {
         spawnPosition = transform.position;
+        currentLives = maxLives;
+
+        rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
     }
 
-
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collider.CompareTag(tag))
+        Enemy enemy = collision.collider.GetComponent<Enemy>();
+        if (enemy && !isInvincible)
         {
-            lives--;
+            Debug.Log("OUCH!");
+            TakeDamage(enemy.damage);
+
+            // --- Knockback mini jump logic ---
+            Vector2 knockDir = (transform.position - enemy.transform.position).normalized;
+            float direction = Mathf.Sign(knockDir.x);
+
+            // Reset and apply a short bounce in the opposite direction
+            rb.linearVelocity = new Vector2(direction * knockbackX, miniJumpY);
+
+            // Disable movement temporarily so bounce isn’t cancelled
+            Movement movement = GetComponent<Movement>();
+            if (movement != null)
+                movement.Stun(0.4f); // about half a second of knockback lock
+
+
+            StartCoroutine(InvincibilityFlash());
+        }
+
+        if (collision.collider.CompareTag("FallCollider"))
+        {
+            Debug.Log("Player fell!");
+            TakeDamage(1);
             Die();
-            if(lives == 0)
-            {
-                RestartUI();
-            }
         }
     }
 
+    private void TakeDamage(int damage)
+    {
+        currentLives -= damage;
+        Debug.Log("Lives left: " + currentLives);
+
+        // Play hit animation
+        Animator animator = GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.SetTrigger("Hit");
+        }
+
+        // Knockback + temporary invincibility handled elsewhere
+        if (currentLives <= 0)
+        {
+            Die();
+            RestartUI();
+        }
+    }
+
+
     private void Die()
     {
-        // Get the Movement script and call PlayerDeath
         Movement movement = GetComponent<Movement>();
         if (movement != null)
         {
             movement.PlayerDeath();
         }
 
-        
-
-        // Optionally, you can delay the reset
         StartCoroutine(RespawnPlayer());
     }
 
     private IEnumerator RespawnPlayer()
     {
-        // Wait a moment after death
         yield return new WaitForSeconds(2.2f);
-
-        // Reset position
         transform.position = spawnPosition;
 
-        // Re-enable the movement script
         Movement movement = GetComponent<Movement>();
         if (movement != null)
         {
@@ -68,4 +111,20 @@ public class PlayerManager : MonoBehaviour
         Time.timeScale = 0f;
     }
 
+    // --- Invincibility flashing effect ---
+    private IEnumerator InvincibilityFlash()
+    {
+        isInvincible = true;
+        float elapsed = 0f;
+
+        while (elapsed < invincibilityTime)
+        {
+            sr.enabled = !sr.enabled; // blink sprite
+            yield return new WaitForSeconds(blinkSpeed);
+            elapsed += blinkSpeed;
+        }
+
+        sr.enabled = true;
+        isInvincible = false;
+    }
 }

@@ -1,39 +1,66 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    public float speed = 8f;
-    public float jumping = 16f;
-    private bool isFacingRight = true;
+    [Header("Movement Settings")]
+    [SerializeField] private float speed = 8f;
+    [SerializeField] private float jumping = 16f;
 
+    [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private Animator animator;
 
+    private bool isFacingRight = true;
     private bool isDead = false;
+    private bool isCrouching = false;
+    private bool isStunned = false;
 
+    [Header("Death Physics")]
+    [SerializeField] private float deathBounceForce = 24f;
+    [SerializeField] private float deathSpinTorque = 300f;
 
+    private Shooting shooting;  // reference to disable/enable shooting
 
+    private void Start()
+    {
+        shooting = GetComponent<Shooting>();
+    }
 
     private void Update()
     {
         if (isDead) return;
 
-        // Flip direction if left key is pressed
-        if (!isFacingRight && Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            Flip();
-        }
-        else if (isFacingRight && Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            Flip();
-        }
+        HandleFlip();
+        HandleJump();
+        HandleStop();
+    }
 
+    private void FixedUpdate()
+    {
+        if (isDead || isCrouching || isStunned) return;
 
-        // Jumping logic
-        if (Input.GetButtonDown("Jump") && IsGrounded())
+        float direction = isFacingRight ? 1f : -1f;
+        rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
+    }
+
+    public void Stun(float duration)
+    {
+        StartCoroutine(StunRoutine(duration));
+    }
+
+    private IEnumerator StunRoutine(float duration)
+    {
+        isStunned = true;
+        yield return new WaitForSeconds(duration);
+        isStunned = false;
+    }
+
+    private void HandleJump()
+    {
+        if (Input.GetButtonDown("Jump") && IsGrounded() && !isCrouching)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumping);
         }
@@ -44,13 +71,31 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void HandleStop()
     {
-        if (isDead) return;
+        bool crouchInput = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
-        // Always move in the direction the player is facing
-        float direction = isFacingRight ? 1f : -1f;
-        rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
+        if (crouchInput && !isCrouching)
+        {
+            isCrouching = true;
+            rb.linearVelocity = Vector2.zero;
+
+            // Disable shooting when crouching
+            if (shooting != null)
+                shooting.enabled = false;
+
+            animator?.SetBool("IsStopping", true);
+        }
+        else if (!crouchInput && isCrouching)
+        {
+            isCrouching = false;
+
+            // Re-enable shooting after crouch ends
+            if (shooting != null)
+                shooting.enabled = true;
+
+            animator?.SetBool("IsStopping", false);
+        }
     }
 
     private bool IsGrounded()
@@ -58,58 +103,50 @@ public class Movement : MonoBehaviour
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
+    private void HandleFlip()
+    {
+        if ((!isFacingRight && Input.GetKeyDown(KeyCode.RightArrow)) ||
+            (isFacingRight && Input.GetKeyDown(KeyCode.LeftArrow)))
+        {
+            Flip();
+        }
+    }
+
     private void Flip()
     {
         isFacingRight = !isFacingRight;
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1f;
-        transform.localScale = localScale;
+        transform.Rotate(0f, 180f, 0f);
     }
-
-    [SerializeField] private float deathBounceForce = 24f;
-    [SerializeField] private float deathSpinTorque = 300f;
 
     public void PlayerDeath()
     {
-        Debug.Log("PlayerDeath called");
         isDead = true;
-
-        // Disable player input and collision
         GetComponent<Collider2D>().enabled = false;
 
-        // Remove all constraints to allow spinning
-        rb.constraints = RigidbodyConstraints2D.None;
+        // Disable shooting on death
+        if (shooting != null)
+            shooting.enabled = false;
 
-        // Reset velocity and bounce up
+        rb.constraints = RigidbodyConstraints2D.None;
         rb.linearVelocity = Vector2.zero;
         rb.AddForce(Vector2.up * deathBounceForce, ForceMode2D.Impulse);
-
-        // Add spin torque
         rb.AddTorque(deathSpinTorque, ForceMode2D.Impulse);
     }
 
     public void Respawn()
     {
-        // Reset facing direction to right
-        if (!isFacingRight)
-        {
-            Flip(); 
-        }
+        if (!isFacingRight) Flip();
 
-        Debug.Log("Player Respawned");
         isDead = false;
-
-        // Re-enable player collider
         GetComponent<Collider2D>().enabled = true;
 
-        // Freeze rotation again so the player doesn't spin during normal play
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        // Re-enable shooting after respawn
+        if (shooting != null)
+            shooting.enabled = true;
 
-        // Stop all motion
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
-
-        // Reset rotation to upright
         transform.rotation = Quaternion.identity;
     }
 }
