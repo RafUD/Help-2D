@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -7,6 +8,10 @@ public class PlayerManager : MonoBehaviour
 
     public int maxLives = 3;
     private int currentLives;
+
+    public HeartsUI heartsUI;
+
+    public PlayerProjectile projectile;
 
     public GameObject GameOverCanvas;
 
@@ -20,10 +25,23 @@ public class PlayerManager : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sr;
 
+
+
+    //Coin
+    private int coinCounter = 0;
+    public TMP_Text counterText;
+
+
+    //Potion
+    public bool isPoweredUp = false;
+    public float powerUpDuration = 5f;
+
     private void Start()
     {
         spawnPosition = transform.position;
         currentLives = maxLives;
+        heartsUI.SetMaxHearts(maxLives);
+       
 
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
@@ -53,18 +71,66 @@ public class PlayerManager : MonoBehaviour
             StartCoroutine(InvincibilityFlash());
         }
 
-        if (collision.collider.CompareTag("FallCollider"))
+        //Coin
+        if (collision.collider.CompareTag("Coin") && collision.gameObject.activeSelf)
+        {
+            collision.gameObject.SetActive(false);
+            coinCounter += 1;
+            counterText.text = coinCounter.ToString();
+        }
+
+
+        else if (collision.collider.CompareTag("FallCollider"))
         {
             Debug.Log("Player fell!");
             TakeDamage(1);
             Die();
         }
+
+        //Hearts
+        else if (collision.collider.CompareTag("Heart") && collision.gameObject.activeSelf)
+        {
+            collision.gameObject.SetActive(false);
+
+            // Restore hearts to full
+            currentLives = maxLives;
+            heartsUI.UpdateHearts(currentLives);
+
+            Debug.Log("Full health restored!");
+        }
+
+
+        //Potion
+        else if (collision.collider.CompareTag("Potion") && collision.gameObject.activeSelf)
+        {
+            collision.gameObject.SetActive(false);
+
+            // Power up projectile
+            StartCoroutine(InvincibilityFlash());
+            StartCoroutine(PotionPowerUp());
+
+            Debug.Log("GIANT FIREBALLS");
+        }
     }
+
+
+    private IEnumerator PotionPowerUp()
+    {
+        isPoweredUp = true;
+        Debug.Log("Power-up activated!");
+        yield return new WaitForSeconds(powerUpDuration);
+        isPoweredUp = false;
+        Debug.Log("Power-up ended!");
+    }
+
 
     private void TakeDamage(int damage)
     {
         currentLives -= damage;
         Debug.Log("Lives left: " + currentLives);
+        //UI
+        heartsUI.UpdateHearts(currentLives);
+
 
         // Play hit animation
         Animator animator = GetComponent<Animator>();

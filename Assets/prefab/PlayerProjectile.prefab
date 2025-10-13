@@ -81,7 +81,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -264701397
-  m_SortingLayer: 8
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_Sprite: {fileID: -2102180605, guid: cf882e687ad7871488423fb7a4155ebc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -182,6 +182,7 @@ MonoBehaviour:
   speed: 15
   damage: 20
   lifetime: 2
+  groundImpactFX: {fileID: 8710327453550186817, guid: c14292affa7de0a43aec9d0e078ff73d, type: 3}
 --- !u!95 &1954304597755483351
 Animator:
   serializedVersion: 7

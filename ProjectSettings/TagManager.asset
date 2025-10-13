@@ -6,6 +6,11 @@ TagManager:
   tags:
   - FallCollider
   - Enemy
+  - Coin
+  - Ground
+  - Heart
+  - Potion
+  - Goal
   layers:
   - Default
   - TransparentFX
@@ -16,8 +21,8 @@ TagManager:
   - Ground
   - Player
   - Projectile
+  - Items
   - Enemy
-  - 
   - 
   - 
   - 
@@ -64,11 +69,20 @@ TagManager:
   - name: Decoration
     uniqueID: 2610752015
     locked: 0
+  - name: Items
+    uniqueID: 2044771711
+    locked: 0
+  - name: Enemies
+    uniqueID: 246986747
+    locked: 0
   - name: Player
     uniqueID: 4030265899
     locked: 0
   - name: Objects
     uniqueID: 3678226185
+    locked: 0
+  - name: UI
+    uniqueID: 1859272919
     locked: 0
   m_RenderingLayers:
   - Default

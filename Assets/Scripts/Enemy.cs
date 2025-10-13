@@ -19,6 +19,8 @@ public class Enemy : MonoBehaviour
     //Damage to player
     public int damage = 1;
 
+
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
