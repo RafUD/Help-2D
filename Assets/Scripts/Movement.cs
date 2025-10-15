@@ -27,11 +27,22 @@ public class Movement : MonoBehaviour
 
     private Shooting shooting;
 
+    //Audio
+    AudioManager audioManager;
+    private AudioSource sfxSource; // Reference to the AudioSource component
+
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+        sfxSource = GetComponent<AudioSource>(); // Get the AudioSource component
+    }
+
+
     private void Start()
     {
         shooting = GetComponent<Shooting>();
     }
-
     private void Update()
     {
         if (isDead) return;
@@ -41,7 +52,31 @@ public class Movement : MonoBehaviour
         HandleMovementStop(); // down key logic
         HandleShootingToggle(); // shift key toggle
 
-        DustFX();
+        // Play footstep SFX whenever the player is grounded, not stopped, not stunned, and not dead
+        bool shouldPlayFootsteps = !isStopped && !isStunned && IsGrounded();
+
+        if (shouldPlayFootsteps)
+        {
+            if (sfxSource.clip != audioManager.playerMovementSFX || !sfxSource.isPlaying)
+            {
+                sfxSource.clip = audioManager.playerMovementSFX;
+                sfxSource.loop = true;
+                sfxSource.volume = 0.2f; // Lower volume by half
+                sfxSource.Play();
+                Debug.Log("Play footstep SFX");
+            }
+            DustFX();
+        }
+        else
+        {
+            if (sfxSource.isPlaying && sfxSource.clip == audioManager.playerMovementSFX)
+            {
+                sfxSource.Stop();
+                sfxSource.loop = false;
+                sfxSource.clip = null;
+                sfxSource.volume = 1f; // Restore volume for other SFX
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -68,6 +103,7 @@ public class Movement : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump") && IsGrounded() && !isStopped)
         {
+            audioManager.PlaySFX(audioManager.jumpSFX);
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumping);
         }
 
@@ -94,6 +130,7 @@ public class Movement : MonoBehaviour
         }
         else if (!stopInput && isStopped)
         {
+
             isStopped = false;
 
             animator?.SetBool("IsStopping", false);

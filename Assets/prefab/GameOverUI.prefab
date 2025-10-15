@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: 8792809807899963050}
   - component: {fileID: 3930408194117228074}
   - component: {fileID: 6973199487163314864}
+  - component: {fileID: 1287672587862513578}
   m_Layer: 0
   m_Name: Menu
   m_TagString: Untagged
@@ -347,6 +348,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1287672587862513578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2254413930590684022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8b3b0cd1b6621f41a2db909dcc1cbe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSFX
 --- !u!1 &2701143038170047821
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,6 +791,7 @@ GameObject:
   - component: {fileID: 6177843046580252261}
   - component: {fileID: 5664282598951769013}
   - component: {fileID: 7793201203175924627}
+  - component: {fileID: 4064054872838300941}
   m_Layer: 0
   m_Name: Restart
   m_TagString: Untagged
@@ -899,3 +913,15 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &4064054872838300941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8201715930704763813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8b3b0cd1b6621f41a2db909dcc1cbe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSFX
