@@ -193,11 +193,14 @@ MonoBehaviour:
   hoverSFX: {fileID: 8300000, guid: acd85fb08eab60c49a825542ed09243d, type: 3}
   coinSFX: {fileID: 8300000, guid: 1687e9ab5ce0f1245923e09f093cbd92, type: 3}
   fallSFX: {fileID: 8300000, guid: 82068008eeda9472db932c326194a7b1, type: 3}
+  masterSFX: {fileID: 8300000, guid: e7a25828c3b7140489fe7f92c7a1ac2b, type: 3}
   niveauRaf: {fileID: 8300000, guid: 513197e4ea0798a4aa5c273b234bf22b, type: 3}
   menuMusic: {fileID: 8300000, guid: 6c7402b6b3095464d9db850885c4d565, type: 3}
   niveauAhmed: {fileID: 8300000, guid: cb55320d937abde49bafcff1af94bb72, type: 3}
   gameWonMusic: {fileID: 8300000, guid: aa4e226f4ddbf5d47900ac09bef565c4, type: 3}
   gameOverMusic: {fileID: 8300000, guid: 38f0d46dcf6d14a4ba06281a895c7718, type: 3}
+  musicVolume: 1
+  sfxVolume: 1
 --- !u!1 &8785397398869562898
 GameObject:
   m_ObjectHideFlags: 0

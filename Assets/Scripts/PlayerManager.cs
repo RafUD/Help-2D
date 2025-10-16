@@ -62,7 +62,7 @@ public class PlayerManager : MonoBehaviour
 
             GetComponent<Movement>()?.Stun(0.4f);
 
-            audioManager?.PlaySFX(audioManager.playerImpackSFX, 0.9f);
+            audioManager?.PlaySFX(audioManager.playerImpackSFX, 1.2f);
 
             StartCoroutine(InvincibilityFlash());
         }

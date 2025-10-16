@@ -40,6 +40,6 @@ public class MainMenu : MonoBehaviour
     public void HoverSound()
     {
         if (audioManager != null)
-            audioManager.PlaySFX(audioManager.hoverSFX);
+            audioManager.PlaySFX(audioManager.hoverSFX, 0.3f);
     }
 }

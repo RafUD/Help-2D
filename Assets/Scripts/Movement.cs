@@ -32,6 +32,9 @@ public class Movement : MonoBehaviour
     private AudioSource sfxSource; // Reference to the AudioSource component
 
 
+    public bool inputLocked = false;
+
+
     private void Awake()
     {
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
@@ -45,6 +48,10 @@ public class Movement : MonoBehaviour
     }
     private void Update()
     {
+
+        if (inputLocked) return;
+
+
         if (isDead) return;
 
         HandleFlip();
@@ -61,7 +68,7 @@ public class Movement : MonoBehaviour
             {
                 sfxSource.clip = audioManager.playerMovementSFX;
                 sfxSource.loop = true;
-                sfxSource.volume = 0.2f; // Lower volume by half
+                sfxSource.volume = 0.01f; 
                 sfxSource.Play();
                 Debug.Log("Play footstep SFX");
             }
@@ -113,7 +120,7 @@ public class Movement : MonoBehaviour
         }
     }
 
-    //  DOWN key - stops movement only
+    // DOWN key - stops movement only
     private void HandleMovementStop()
     {
         bool stopInput = Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S);
@@ -127,18 +134,26 @@ public class Movement : MonoBehaviour
 
             if (dustFX != null && dustFX.isPlaying)
                 dustFX.Stop();
+
+            Debug.Log("Player stopped.");
         }
         else if (!stopInput && isStopped)
         {
-
             isStopped = false;
 
             animator?.SetBool("IsStopping", false);
 
             if (dustFX != null && !dustFX.isPlaying)
                 dustFX.Play();
+
+            Debug.Log(" Player resumed movement.");
         }
     }
+
+
+
+
+
 
     //  SHIFT key - toggles shooting on/off
     private void HandleShootingToggle()

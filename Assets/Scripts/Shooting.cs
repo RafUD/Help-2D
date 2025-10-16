@@ -44,6 +44,6 @@ public class Shooting : MonoBehaviour
         if (playerManager.isPoweredUp)
             audioManager.PlaySFX(audioManager.empoweredShootSFX, 0.5f);
         else
-            audioManager.PlaySFX(audioManager.shootSFX, 0.15f);
+            audioManager.PlaySFX(audioManager.shootSFX, 0.3f);
     }
 }

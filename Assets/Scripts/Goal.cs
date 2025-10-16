@@ -4,7 +4,13 @@ using UnityEngine.SceneManagement;
 
 public class Goal : MonoBehaviour
 {
-    [SerializeField] private string nextSceneName; // set in Inspector
+    private AudioManager audioManager; // Reference to AudioManager
+    [SerializeField] private Enemy enemy; // Reference to enemy (to start moving later)
+
+    private void Start()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio")?.GetComponent<AudioManager>();
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -17,17 +23,59 @@ public class Goal : MonoBehaviour
 
     private IEnumerator LevelCompleteSequence(GameObject player)
     {
-        // Optional: disable movement/shooting
+        // disable movement/shooting/animation
         Movement move = player.GetComponent<Movement>();
         Shooting shoot = player.GetComponent<Shooting>();
+        Animator animator = player.GetComponent<Animator>();
 
         if (move != null) move.enabled = false;
         if (shoot != null) shoot.enabled = false;
+        if (animator != null) animator.SetBool("IsStopping", true);
 
-        // Optional animation or sound
-        yield return new WaitForSeconds(1.5f); // small pause
+        yield return new WaitForSeconds(1f); // short pause before enemy starts moving
 
-        // Load next scene
-        SceneManager.LoadScene(nextSceneName);
+
+
+        // Stop the music
+        if (audioManager != null)
+        {
+            audioManager.StopMusic();
+        }
+
+
+        //  Start enemy movement after short delay
+        if (enemy != null && !enemy.enabled)
+        {
+            enemy.enabled = true;
+            Debug.Log("Enemy started moving!");
+
+            audioManager?.PlaySFX(audioManager.masterSFX, 2f);
+
+        }
+
+        yield return new WaitForSeconds(2f); // wait before continuing
+
+        GetComponent<Collider2D>().enabled = false; // optional
+        transform.position += Vector3.up * 10f;    // move it away so player can pass
+
+        if (move != null) move.enabled = true;
+        if (animator != null) animator.SetBool("IsStopping", false);
+
+
+        yield return new WaitForSeconds(3f); // small pause before loading next level
+
+        // Load next scene in build order
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+
+        // Make sure next scene exists in build settings
+        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+        {
+            SceneManager.LoadScene(nextSceneIndex);
+        }
+        else
+        {
+            Debug.LogWarning("No more scenes in build order!");
+        }
     }
 }

@@ -4,7 +4,8 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     public static bool Paused = false;
-    public GameObject PauseMenuCanvas;
+    public GameObject PauseMenuUI;
+    public GameObject GameOverUI;
 
     private AudioManager audioManager;
 
@@ -17,18 +18,23 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
+        // --- Block pause input if GameOverUI is active ---
+        if (GameOverUI != null && GameOverUI.activeSelf)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (Paused)
                 Play();
             else
-            Stop();
+                Stop();
         }
     }
 
+
     public void Stop()
     {
-        PauseMenuCanvas.SetActive(true);
+        PauseMenuUI.SetActive(true);
         Debug.Log("Pause menu canvas!!");
         Time.timeScale = 0f;
         Debug.Log("Pause: time frozen!!");
@@ -40,7 +46,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Play()
     {
-        PauseMenuCanvas.SetActive(false);
+        PauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
         Paused = false;
 
