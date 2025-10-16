@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/NiveauAhmed.unity
     guid: fc6df8e881d269249b2856480279b8ee
+  - enabled: 1
+    path: Assets/Scenes/JeuGagne.unity
+    guid: 553fb1c263f1b7d499ab2f529d4594df
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
