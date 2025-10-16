@@ -35,6 +35,7 @@ public class PlayerManager : MonoBehaviour
 
     private AudioManager audioManager; // Reference to AudioManager
 
+    
     private void Start()
     {
         spawnPosition = transform.position;
@@ -47,6 +48,8 @@ public class PlayerManager : MonoBehaviour
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
     }
 
+
+    //When the player 'interacts' with ...
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // --- ENEMY HIT ---
@@ -60,10 +63,13 @@ public class PlayerManager : MonoBehaviour
             float direction = Mathf.Sign(knockDir.x);
             rb.linearVelocity = new Vector2(direction * knockbackX, miniJumpY);
 
+            //The player is unable to move
             GetComponent<Movement>()?.Stun(0.4f);
 
+            //Player being hit SFX
             audioManager?.PlaySFX(audioManager.playerImpackSFX, 1.2f);
 
+            //When hit, the player flash to show the impact and
             StartCoroutine(InvincibilityFlash());
         }
 
@@ -103,6 +109,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    
     private void TakeDamage(int damage)
     {
         currentLives -= damage;
@@ -111,7 +118,7 @@ public class PlayerManager : MonoBehaviour
 
         if (currentLives <= 0)
         {
-            // Play Game Over Music (matches latest AudioManager)
+            
             audioManager?.PlayMusic(audioManager.gameOverMusic);
 
             Die();
@@ -137,7 +144,6 @@ public class PlayerManager : MonoBehaviour
         GameOverCanvas.SetActive(true);
         Time.timeScale = 0f;
 
-        // Use gameOverMusic instead of deathScreenMusic
         audioManager?.PlayMusic(audioManager.gameOverMusic);
     }
 
@@ -148,6 +154,7 @@ public class PlayerManager : MonoBehaviour
         isPoweredUp = false;
     }
 
+    //The player is 
     private IEnumerator InvincibilityFlash()
     {
         isInvincible = true;

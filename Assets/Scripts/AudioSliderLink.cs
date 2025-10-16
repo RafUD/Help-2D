@@ -11,7 +11,7 @@ public class AudioSliderLink : MonoBehaviour
     void Start()
     {
         slider = GetComponent<Slider>();
-        var manager = FindObjectOfType<AudioManager>();
+        var manager = FindFirstObjectByType<AudioManager>();
         if (manager == null || slider == null) return;
 
         // Set slider to current volume

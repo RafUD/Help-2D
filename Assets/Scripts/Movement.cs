@@ -59,7 +59,7 @@ public class Movement : MonoBehaviour
         HandleMovementStop(); // down key logic
         HandleShootingToggle(); // shift key toggle
 
-        // Play footstep SFX whenever the player is grounded, not stopped, not stunned, and not dead
+        // SFX when the player is grounded, not stopped, not stunned, and not dead
         bool shouldPlayFootsteps = !isStopped && !isStunned && IsGrounded();
 
         if (shouldPlayFootsteps)
@@ -86,6 +86,7 @@ public class Movement : MonoBehaviour
         }
     }
 
+    //The player always moves in this direcction
     private void FixedUpdate()
     {
         if (isDead || isStopped || isStunned) return;
@@ -94,11 +95,11 @@ public class Movement : MonoBehaviour
         rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
     }
 
+    //This is called in the PlayerManager ex.: when hit by enemy
     public void Stun(float duration)
     {
         StartCoroutine(StunRoutine(duration));
     }
-
     private IEnumerator StunRoutine(float duration)
     {
         isStunned = true;
@@ -106,6 +107,7 @@ public class Movement : MonoBehaviour
         isStunned = false;
     }
 
+    //Jump 
     private void HandleJump()
     {
         if (Input.GetButtonDown("Jump") && IsGrounded() && !isStopped)
@@ -169,6 +171,7 @@ public class Movement : MonoBehaviour
         }
     }
 
+    //The player has a gameObject with a collide
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
@@ -219,6 +222,7 @@ public class Movement : MonoBehaviour
         transform.rotation = Quaternion.identity;
     }
 
+    //Player movement (leaving a trail of dust)FX
     private void DustFX()
     {
         if (dustFX == null) return;
