@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1022400353098607817}
   - component: {fileID: 8710327453550186817}
   - component: {fileID: 9137972250916038959}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: RedParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -116,7 +116,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.6
+      scalar: 0.3
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -221,12 +221,12 @@ ParticleSystem:
         m_RotationOrder: 4
     startColor:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 1
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.9150943, g: 0, b: 0, a: 1}
+      maxColor: {r: 0.9150943, g: 0, b: 0, a: 0}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 1}
+        key0: {r: 0.8584906, g: 0.03644534, b: 0.03644534, a: 1}
         key1: {r: 1, g: 1, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
@@ -251,7 +251,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       minGradient:
@@ -611,7 +611,7 @@ ParticleSystem:
     gravityModifier:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 0.3
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -664,7 +664,7 @@ ParticleSystem:
   ShapeModule:
     serializedVersion: 6
     enabled: 1
-    type: 4
+    type: 0
     angle: 5
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
@@ -980,7 +980,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 75
+        scalar: 30
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -4860,7 +4860,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -264701397
-  m_SortingLayer: 8
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0

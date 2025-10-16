@@ -1,95 +1,127 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
     private Vector3 spawnPosition;
 
+    [Header("Lives")]
     public int maxLives = 3;
     private int currentLives;
 
+    [Header("References")]
+    public HeartsUI heartsUI;
+    public PlayerProjectile projectile;
     public GameObject GameOverCanvas;
 
     [Header("Damage Feedback")]
-    public float knockbackX = 5f;        // Horizontal push amount
-    public float miniJumpY = 4f;         // How high the "hit jump" goes
-    public float invincibilityTime = 1f; // Duration of invulnerability
-    public float blinkSpeed = 0.1f;      // Sprite blinking speed
+    public float knockbackX = 5f;
+    public float miniJumpY = 4f;
+    public float invincibilityTime = 1f;
+    public float blinkSpeed = 0.1f;
 
     private bool isInvincible = false;
     private Rigidbody2D rb;
     private SpriteRenderer sr;
 
+    [Header("Collectibles")]
+    private int coinCounter = 0;
+    public TMP_Text counterText;
+
+    [Header("Power-Up")]
+    public bool isPoweredUp = false;
+    public float powerUpDuration = 5f;
+
+    private AudioManager audioManager; // Reference to AudioManager
+
     private void Start()
     {
         spawnPosition = transform.position;
         currentLives = maxLives;
+        heartsUI.SetMaxHearts(maxLives);
 
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // --- ENEMY HIT ---
         Enemy enemy = collision.collider.GetComponent<Enemy>();
         if (enemy && !isInvincible)
         {
-            Debug.Log("OUCH!");
             TakeDamage(enemy.damage);
 
-            // --- Knockback mini jump logic ---
+            // Knockback + mini jump
             Vector2 knockDir = (transform.position - enemy.transform.position).normalized;
             float direction = Mathf.Sign(knockDir.x);
-
-            // Reset and apply a short bounce in the opposite direction
             rb.linearVelocity = new Vector2(direction * knockbackX, miniJumpY);
 
-            // Disable movement temporarily so bounce isn’t cancelled
-            Movement movement = GetComponent<Movement>();
-            if (movement != null)
-                movement.Stun(0.4f); // about half a second of knockback lock
+            GetComponent<Movement>()?.Stun(0.4f);
 
+            audioManager?.PlaySFX(audioManager.playerImpackSFX, 0.9f);
 
             StartCoroutine(InvincibilityFlash());
         }
 
-        if (collision.collider.CompareTag("FallCollider"))
+        // --- COIN ---
+        else if (collision.collider.CompareTag("Coin") && collision.gameObject.activeSelf)
         {
-            Debug.Log("Player fell!");
+            collision.gameObject.SetActive(false);
+            coinCounter++;
+            counterText.text = coinCounter.ToString();
+            audioManager?.PlaySFX(audioManager.coinSFX);
+        }
+
+        // --- FALL COLLIDER ---
+        else if (collision.collider.CompareTag("FallCollider"))
+        {
             TakeDamage(1);
             Die();
+            audioManager?.PlaySFX(audioManager.fallSFX);
+        }
+
+        // --- HEART (HEAL) ---
+        else if (collision.collider.CompareTag("Heart") && collision.gameObject.activeSelf)
+        {
+            collision.gameObject.SetActive(false);
+            currentLives = maxLives;
+            heartsUI.UpdateHearts(currentLives);
+            audioManager?.PlaySFX(audioManager.healSFX);
+        }
+
+        // --- POTION (POWER-UP) ---
+        else if (collision.collider.CompareTag("Potion") && collision.gameObject.activeSelf)
+        {
+            collision.gameObject.SetActive(false);
+            StartCoroutine(InvincibilityFlash());
+            StartCoroutine(PotionPowerUp());
+            audioManager?.PlaySFX(audioManager.powerUpSFX);
         }
     }
 
     private void TakeDamage(int damage)
     {
         currentLives -= damage;
-        Debug.Log("Lives left: " + currentLives);
+        heartsUI.UpdateHearts(currentLives);
+        GetComponent<Animator>()?.SetTrigger("Hit");
 
-        // Play hit animation
-        Animator animator = GetComponent<Animator>();
-        if (animator != null)
-        {
-            animator.SetTrigger("Hit");
-        }
-
-        // Knockback + temporary invincibility handled elsewhere
         if (currentLives <= 0)
         {
+            // Play Game Over Music (matches latest AudioManager)
+            audioManager?.PlayMusic(audioManager.gameOverMusic);
+
             Die();
             RestartUI();
         }
     }
 
-
     private void Die()
     {
-        Movement movement = GetComponent<Movement>();
-        if (movement != null)
-        {
-            movement.PlayerDeath();
-        }
-
+        GetComponent<Movement>()?.PlayerDeath();
         StartCoroutine(RespawnPlayer());
     }
 
@@ -97,21 +129,25 @@ public class PlayerManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2.2f);
         transform.position = spawnPosition;
-
-        Movement movement = GetComponent<Movement>();
-        if (movement != null)
-        {
-            movement.Respawn();
-        }
+        GetComponent<Movement>()?.Respawn();
     }
 
     private void RestartUI()
     {
         GameOverCanvas.SetActive(true);
         Time.timeScale = 0f;
+
+        // Use gameOverMusic instead of deathScreenMusic
+        audioManager?.PlayMusic(audioManager.gameOverMusic);
     }
 
-    // --- Invincibility flashing effect ---
+    private IEnumerator PotionPowerUp()
+    {
+        isPoweredUp = true;
+        yield return new WaitForSeconds(powerUpDuration);
+        isPoweredUp = false;
+    }
+
     private IEnumerator InvincibilityFlash()
     {
         isInvincible = true;
@@ -119,7 +155,7 @@ public class PlayerManager : MonoBehaviour
 
         while (elapsed < invincibilityTime)
         {
-            sr.enabled = !sr.enabled; // blink sprite
+            sr.enabled = !sr.enabled;
             yield return new WaitForSeconds(blinkSpeed);
             elapsed += blinkSpeed;
         }

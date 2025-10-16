@@ -15,15 +15,18 @@ public class Enemy : MonoBehaviour
     public GameObject pointB;
     private Transform currentPoint;
 
-
-    //Damage to player
+    [Header("Damage to Player")]
     public int damage = 1;
+
+    private AudioManager audioManager;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         currentPoint = pointB.transform; // start moving toward B
+
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
     }
 
     private void Update()
@@ -39,12 +42,12 @@ public class Enemy : MonoBehaviour
         // Check if near target, switch direction
         if (Vector2.Distance(transform.position, currentPoint.position) < 0.5f)
         {
-            flip();
+            Flip();
             currentPoint = (currentPoint == pointB.transform) ? pointA.transform : pointB.transform;
         }
     }
 
-    private void flip()
+    private void Flip()
     {
         Vector3 scale = transform.localScale;
         scale.x *= -1;
@@ -53,29 +56,29 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check if the collision is with the player
+        // If touching player, flip direction
         if (collision.collider.CompareTag("Player"))
         {
-            // Flip direction when touching the player
-            flip();
-
-            // Also reverse patrol direction
+            Flip();
             currentPoint = (currentPoint == pointB.transform) ? pointA.transform : pointB.transform;
         }
     }
 
-
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(pointA.transform.position, 0.3f);
-        Gizmos.DrawSphere(pointB.transform.position, 0.3f);
-        Gizmos.DrawLine(pointA.transform.position, pointB.transform.position);
+        if (pointA != null && pointB != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(pointA.transform.position, 0.3f);
+            Gizmos.DrawSphere(pointB.transform.position, 0.3f);
+            Gizmos.DrawLine(pointA.transform.position, pointB.transform.position);
+        }
     }
 
-    // Keep FixedUpdate for death check only (optional)
     private void FixedUpdate()
     {
-        if (isDead) rb.linearVelocity = Vector2.zero;
+        if (isDead)
+            rb.linearVelocity = Vector2.zero;
     }
 
     public void TakeDamage(float damage)
@@ -86,6 +89,10 @@ public class Enemy : MonoBehaviour
 
         if (animator != null)
             animator.SetTrigger("Hit");
+
+        // --- Play impact sound ---
+        if (audioManager != null && audioManager.enemyImpactSFX != null)
+            audioManager.PlaySFX(audioManager.enemyImpactSFX, 0.4f);
 
         if (health <= 0)
             Die();
@@ -99,6 +106,10 @@ public class Enemy : MonoBehaviour
 
         if (animator != null)
             animator.SetTrigger("Die");
+
+        // --- Play death sound ---
+        if (audioManager != null && audioManager.deathEnemySFX != null)
+            audioManager.PlaySFX(audioManager.deathEnemySFX, 0.6f);
 
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.isTrigger = true;

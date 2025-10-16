@@ -15,32 +15,73 @@ public class Movement : MonoBehaviour
 
     private bool isFacingRight = true;
     private bool isDead = false;
-    private bool isCrouching = false;
+    private bool isStopped = false;
     private bool isStunned = false;
+    private bool shootingPaused = false; // shift toggle state
 
     [Header("Death Physics")]
     [SerializeField] private float deathBounceForce = 24f;
     [SerializeField] private float deathSpinTorque = 300f;
 
-    private Shooting shooting;  // reference to disable/enable shooting
+    public ParticleSystem dustFX;
+
+    private Shooting shooting;
+
+    //Audio
+    AudioManager audioManager;
+    private AudioSource sfxSource; // Reference to the AudioSource component
+
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+        sfxSource = GetComponent<AudioSource>(); // Get the AudioSource component
+    }
+
 
     private void Start()
     {
         shooting = GetComponent<Shooting>();
     }
-
     private void Update()
     {
         if (isDead) return;
 
         HandleFlip();
         HandleJump();
-        HandleStop();
+        HandleMovementStop(); // down key logic
+        HandleShootingToggle(); // shift key toggle
+
+        // Play footstep SFX whenever the player is grounded, not stopped, not stunned, and not dead
+        bool shouldPlayFootsteps = !isStopped && !isStunned && IsGrounded();
+
+        if (shouldPlayFootsteps)
+        {
+            if (sfxSource.clip != audioManager.playerMovementSFX || !sfxSource.isPlaying)
+            {
+                sfxSource.clip = audioManager.playerMovementSFX;
+                sfxSource.loop = true;
+                sfxSource.volume = 0.2f; // Lower volume by half
+                sfxSource.Play();
+                Debug.Log("Play footstep SFX");
+            }
+            DustFX();
+        }
+        else
+        {
+            if (sfxSource.isPlaying && sfxSource.clip == audioManager.playerMovementSFX)
+            {
+                sfxSource.Stop();
+                sfxSource.loop = false;
+                sfxSource.clip = null;
+                sfxSource.volume = 1f; // Restore volume for other SFX
+            }
+        }
     }
 
     private void FixedUpdate()
     {
-        if (isDead || isCrouching || isStunned) return;
+        if (isDead || isStopped || isStunned) return;
 
         float direction = isFacingRight ? 1f : -1f;
         rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
@@ -60,8 +101,9 @@ public class Movement : MonoBehaviour
 
     private void HandleJump()
     {
-        if (Input.GetButtonDown("Jump") && IsGrounded() && !isCrouching)
+        if (Input.GetButtonDown("Jump") && IsGrounded() && !isStopped)
         {
+            audioManager.PlaySFX(audioManager.jumpSFX);
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumping);
         }
 
@@ -71,30 +113,44 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private void HandleStop()
+    //  DOWN key - stops movement only
+    private void HandleMovementStop()
     {
-        bool crouchInput = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        bool stopInput = Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S);
 
-        if (crouchInput && !isCrouching)
+        if (stopInput && !isStopped)
         {
-            isCrouching = true;
+            isStopped = true;
             rb.linearVelocity = Vector2.zero;
 
-            // Disable shooting when crouching
-            if (shooting != null)
-                shooting.enabled = false;
-
             animator?.SetBool("IsStopping", true);
-        }
-        else if (!crouchInput && isCrouching)
-        {
-            isCrouching = false;
 
-            // Re-enable shooting after crouch ends
-            if (shooting != null)
-                shooting.enabled = true;
+            if (dustFX != null && dustFX.isPlaying)
+                dustFX.Stop();
+        }
+        else if (!stopInput && isStopped)
+        {
+
+            isStopped = false;
 
             animator?.SetBool("IsStopping", false);
+
+            if (dustFX != null && !dustFX.isPlaying)
+                dustFX.Play();
+        }
+    }
+
+    //  SHIFT key - toggles shooting on/off
+    private void HandleShootingToggle()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        {
+            shootingPaused = !shootingPaused;
+
+            if (shooting != null)
+                shooting.enabled = !shootingPaused;
+
+            Debug.Log(shootingPaused ? "Shooting paused." : "Shooting resumed.");
         }
     }
 
@@ -123,7 +179,6 @@ public class Movement : MonoBehaviour
         isDead = true;
         GetComponent<Collider2D>().enabled = false;
 
-        // Disable shooting on death
         if (shooting != null)
             shooting.enabled = false;
 
@@ -140,13 +195,20 @@ public class Movement : MonoBehaviour
         isDead = false;
         GetComponent<Collider2D>().enabled = true;
 
-        // Re-enable shooting after respawn
-        if (shooting != null)
+        if (shooting != null && !shootingPaused)
             shooting.enabled = true;
 
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
         transform.rotation = Quaternion.identity;
+    }
+
+    private void DustFX()
+    {
+        if (dustFX == null) return;
+
+        if (!dustFX.isPlaying)
+            dustFX.Play();
     }
 }
