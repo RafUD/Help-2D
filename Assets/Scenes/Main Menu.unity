@@ -2017,16 +2017,15 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "<i>Notre personnage a \xE9t\xE9 \xAB kidnapp\xE9 \xBB !</i> <i>Help !!</i> 
-    \n\r\nPlong\xE9 dans un monde inconnu, dot\xE9 de pouvoirs myst\xE9rieux, il
-    est d\xE9sormais poss\xE9d\xE9 par une magie de feu qui le pousse \xE0 combattre
-    sans r\xE9pit ses ennemis \u2014 et \xE0 courir sans contr\xF4le ! <b>Avancez
-    pour d\xE9couvrir la v\xE9rit\xE9</b> de ce monde \xE9trange : les <b>pi\xE8ces
-    brillantes</b> vous guideront, les <b>c\u0153urs</b> vous redonneront vie, et
-    les <b>potions</b> r\xE9veilleront votre pouvoir cach\xE9.  \r\nAppuyez sur la
-    touche <b>\u2193</b> pour vous arr\xEAter, les <b>fl\xE8ches</b> pour changer
-    de direction, <b>Shift</b> pour calmer le feu, et <b>espace</b> pour sauter et
-    survivre !"
+  m_text: "\n\n<b><i>Help !!</i>  </b>\n\r\nPoss\xE9d\xE9 par une magie de feu et
+    courir sans contr\xF4le ! <b>Avancez pour d\xE9couvrir la v\xE9rit\xE9</b> de
+    ce monde \xE9trange : les <b>pi\xE8ces brillantes</b> vous guideront, les <b>c\u0153urs</b>
+    vous redonneront vie, et les <b>potions</b> r\xE9veilleront votre pouvoir cach\xE9. 
+    \r\nAppuyez sur la touche <b>\u2193</b> pour vous arr\xEAter, les <b>fl\xE8ches</b>
+    pour changer de direction, <b>Shift</b> pour calmer le feu, et <b>espace</b>
+    pour sauter et survivre !\n\n<u><b>Conditions de victoire : Traverser le monde.
+    Se sauver. (Atteindre la ligne de finissage.)\r\nConditions de d\xE9faite : Perdre
+    sa vie. (Perdre tous les points de vie.)</b>\r\n\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
