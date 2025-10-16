@@ -10997,6 +10997,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3800468670583056157, guid: b516686e1a8d1e2419cd5ae95600477b, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
+    - target: {fileID: 3800468670583056157, guid: b516686e1a8d1e2419cd5ae95600477b, type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3868440039168017093, guid: b516686e1a8d1e2419cd5ae95600477b, type: 3}
       propertyPath: m_fontSize
       value: 60
@@ -11100,6 +11108,14 @@ PrefabInstance:
     - target: {fileID: 5877911561026206713, guid: b516686e1a8d1e2419cd5ae95600477b, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 405
+      objectReference: {fileID: 0}
+    - target: {fileID: 6808419311153333348, guid: b516686e1a8d1e2419cd5ae95600477b, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
+    - target: {fileID: 6808419311153333348, guid: b516686e1a8d1e2419cd5ae95600477b, type: 3}
+      propertyPath: m_RenderMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7071301541347593926, guid: b516686e1a8d1e2419cd5ae95600477b, type: 3}
       propertyPath: m_SizeDelta.x
@@ -11547,6 +11563,14 @@ PrefabInstance:
     - target: {fileID: 1487784471049134482, guid: e64080754c6126247accdbc334474ab0, type: 3}
       propertyPath: m_fontStyle
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2087266117079295910, guid: e64080754c6126247accdbc334474ab0, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
+    - target: {fileID: 2087266117079295910, guid: e64080754c6126247accdbc334474ab0, type: 3}
+      propertyPath: m_RenderMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3338635509259828817, guid: e64080754c6126247accdbc334474ab0, type: 3}
       propertyPath: m_LocalPosition.x
